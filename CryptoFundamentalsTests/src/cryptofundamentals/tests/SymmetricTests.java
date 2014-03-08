@@ -31,7 +31,9 @@ public class SymmetricTests {
 
 	@Test
 	public void generateARandomAesKey() throws Exception {
-		SecretKey key = null;
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+		keyGenerator.init(256);
+		SecretKey key = keyGenerator.generateKey();
 
 		assertEquals("AES", key.getAlgorithm());
 		assertEquals(32, key.getEncoded().length);
