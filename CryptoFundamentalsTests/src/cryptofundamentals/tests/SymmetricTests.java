@@ -13,6 +13,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.Security;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -23,15 +24,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
 public class SymmetricTests {
 
 	@Test
 	public void generateARandomAesKey() throws Exception {
-		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-		keyGenerator.init(256);
-		SecretKey key = keyGenerator.generateKey();
+		SecretKey key = null;
 
 		assertEquals("AES", key.getAlgorithm());
 		assertEquals(32, key.getEncoded().length);
@@ -42,7 +42,7 @@ public class SymmetricTests {
 		String message = "Alice knows Bob's secret.";
 
 		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-		keyGenerator.init(128);
+		keyGenerator.init(256);
 		SecretKey key = keyGenerator.generateKey();
 		
 		SecureRandom random = new SecureRandom();
@@ -60,9 +60,7 @@ public class SymmetricTests {
 		throws Exception {
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		aes.init(Cipher.ENCRYPT_MODE, key, iv);
-		CipherOutputStream cipherOut = new CipherOutputStream(out, aes);
+		CipherOutputStream cipherOut = null;
 		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);
 		
 		try {
@@ -80,7 +78,6 @@ public class SymmetricTests {
 
 		ByteArrayInputStream in = new ByteArrayInputStream(cipertext);
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
-		aes.init(Cipher.DECRYPT_MODE, key, iv);
 		CipherInputStream cipherIn = new CipherInputStream(in, aes);
 		InputStreamReader reader = new InputStreamReader(cipherIn);
 		BufferedReader bufferedReader = new BufferedReader(reader);
