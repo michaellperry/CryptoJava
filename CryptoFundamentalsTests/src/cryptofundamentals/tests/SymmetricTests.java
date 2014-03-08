@@ -47,7 +47,10 @@ public class SymmetricTests {
 		keyGenerator.init(256);
 		SecretKey key = keyGenerator.generateKey();
 		
-		IvParameterSpec iv = null;
+		SecureRandom random = new SecureRandom();
+		byte[] buffer = new byte[16];
+		random.nextBytes(buffer);
+		IvParameterSpec iv = new IvParameterSpec(buffer);
 		
 		byte[] cipertext = encryptWithAes(message, key, iv);
 		String actualMessage = decryptWithAes(cipertext, key, iv);
@@ -59,7 +62,9 @@ public class SymmetricTests {
 		throws Exception {
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		CipherOutputStream cipherOut = null;
+		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		aes.init(Cipher.ENCRYPT_MODE, key, iv);
+		CipherOutputStream cipherOut = new CipherOutputStream(out, aes);
 		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);
 		
 		try {
@@ -77,6 +82,7 @@ public class SymmetricTests {
 
 		ByteArrayInputStream in = new ByteArrayInputStream(cipertext);
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		aes.init(Cipher.DECRYPT_MODE, key, iv);
 		CipherInputStream cipherIn = new CipherInputStream(in, aes);
 		InputStreamReader reader = new InputStreamReader(cipherIn);
 		BufferedReader bufferedReader = new BufferedReader(reader);
