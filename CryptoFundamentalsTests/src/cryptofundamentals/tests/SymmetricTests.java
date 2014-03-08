@@ -45,10 +45,7 @@ public class SymmetricTests {
 		keyGenerator.init(256);
 		SecretKey key = keyGenerator.generateKey();
 		
-		SecureRandom random = new SecureRandom();
-		byte[] ivBytes = new byte[16];
-		random.nextBytes(ivBytes);
-		IvParameterSpec iv = new IvParameterSpec(ivBytes);
+		IvParameterSpec iv = null;
 		
 		byte[] cipertext = encryptWithAes(message, key, iv);
 		String actualMessage = decryptWithAes(cipertext, key, iv);
