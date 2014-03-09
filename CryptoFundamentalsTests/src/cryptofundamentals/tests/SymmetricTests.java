@@ -28,10 +28,14 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Test;
 
 public class SymmetricTests {
+	
+	static {
+		Security.addProvider(new BouncyCastleProvider());
+	}
 
 	@Test
 	public void generateARandomAesKey() throws Exception {
-		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES", "BC");
 		keyGenerator.init(256);
 		SecretKey key = keyGenerator.generateKey();
 
@@ -43,7 +47,7 @@ public class SymmetricTests {
 	public void encryptAMessageWithAes() throws Exception {
 		String message = "Alice knows Bob's secret.";
 
-		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES", "BC");
 		keyGenerator.init(256);
 		SecretKey key = keyGenerator.generateKey();
 		
@@ -62,7 +66,7 @@ public class SymmetricTests {
 		throws Exception {
 		
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 		aes.init(Cipher.ENCRYPT_MODE, key, iv);
 		CipherOutputStream cipherOut = new CipherOutputStream(out, aes);
 		OutputStreamWriter writer = new OutputStreamWriter(cipherOut);
@@ -81,7 +85,7 @@ public class SymmetricTests {
 		throws Exception {
 
 		ByteArrayInputStream in = new ByteArrayInputStream(cipertext);
-		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding", "BC");
 		aes.init(Cipher.DECRYPT_MODE, key, iv);
 		CipherInputStream cipherIn = new CipherInputStream(in, aes);
 		InputStreamReader reader = new InputStreamReader(cipherIn);
