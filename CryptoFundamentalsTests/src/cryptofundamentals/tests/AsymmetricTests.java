@@ -24,9 +24,7 @@ public class AsymmetricTests {
 
 	@Test
 	public void generateAnRsaKeyPair() throws Exception {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		keyPairGenerator.initialize(2048);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
+		KeyPair keyPair = generateRsaKey();
 		
 		assertEquals("RSA", keyPair.getPublic().getAlgorithm());
 		assertTrue(keyPair.getPublic().getEncoded().length > 2048 / 8);
@@ -35,9 +33,7 @@ public class AsymmetricTests {
 	
 	@Test
 	public void encryptASymmetricKey() throws Exception {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		keyPairGenerator.initialize(2048);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
+		KeyPair keyPair = generateRsaKey();
 
 		PublicKey publicKey = keyPair.getPublic();
 		PrivateKey privateKey = keyPair.getPrivate();
@@ -53,10 +49,8 @@ public class AsymmetricTests {
 	}
 	
 	@Test
-	public void signeAMessage() throws Exception {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		keyPairGenerator.initialize(2048);
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
+	public void signAMessage() throws Exception {
+		KeyPair keyPair = generateRsaKey();
 
 		PublicKey publicKey = keyPair.getPublic();
 		PrivateKey privateKey = keyPair.getPrivate();
@@ -70,30 +64,28 @@ public class AsymmetricTests {
 		assertTrue(verified);
 	}
 
+	private KeyPair generateRsaKey() throws NoSuchAlgorithmException {
+		return null;
+	}
+
 	private byte[] encryptWithRsa(PublicKey publicKey, SecretKey key)
 			throws Exception {
 		
 		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-		rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-		byte[] encryptedKey = rsa.doFinal(key.getEncoded());
-		return encryptedKey;
+		return null;
 	}
 
 	private byte[] decryptWithRsa(PrivateKey privateKey, byte[] encryptedKey)
 			throws Exception {
 		
 		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-		rsa.init(Cipher.DECRYPT_MODE, privateKey);
-		byte[] decryptedKey = rsa.doFinal(encryptedKey);
-		return decryptedKey;
+		return rsa.doFinal(encryptedKey);
 	}
 
 	private byte[] signMessage(PrivateKey privateKey, byte[] messageBytes)
 			throws Exception {
 		
 		Signature signature = Signature.getInstance("SHA256withRSA");
-		signature.initSign(privateKey);
-		signature.update(messageBytes);
 		return signature.sign();
 	}
 
@@ -101,8 +93,6 @@ public class AsymmetricTests {
 			byte[] signatureBytes) throws Exception {
 		
 		Signature signature = Signature.getInstance("SHA256withRSA");
-		signature.initVerify(publicKey);
-		signature.update(messageBytes);
 		return signature.verify(signatureBytes);
 	}
 
