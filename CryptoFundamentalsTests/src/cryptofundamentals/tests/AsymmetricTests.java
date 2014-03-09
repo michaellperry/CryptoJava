@@ -65,20 +65,24 @@ public class AsymmetricTests {
 	}
 
 	private KeyPair generateRsaKey() throws NoSuchAlgorithmException {
-		return null;
+		KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+		generator.initialize(2048);
+		return generator.generateKeyPair();
 	}
 
 	private byte[] encryptWithRsa(PublicKey publicKey, SecretKey key)
 			throws Exception {
 		
 		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-		return null;
+		rsa.init(Cipher.ENCRYPT_MODE, publicKey);
+		return rsa.doFinal(key.getEncoded());
 	}
 
 	private byte[] decryptWithRsa(PrivateKey privateKey, byte[] encryptedKey)
 			throws Exception {
 		
 		Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+		rsa.init(Cipher.DECRYPT_MODE, privateKey);
 		return rsa.doFinal(encryptedKey);
 	}
 
@@ -86,6 +90,8 @@ public class AsymmetricTests {
 			throws Exception {
 		
 		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initSign(privateKey);
+		signature.update(messageBytes);
 		return signature.sign();
 	}
 
@@ -93,6 +99,8 @@ public class AsymmetricTests {
 			byte[] signatureBytes) throws Exception {
 		
 		Signature signature = Signature.getInstance("SHA256withRSA");
+		signature.initVerify(publicKey);
+		signature.update(messageBytes);
 		return signature.verify(signatureBytes);
 	}
 
